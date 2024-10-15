@@ -3,24 +3,26 @@ from fastapi import HTTPException, status, APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 import schema
-import models
+import models, oauth2
 from database import get_db
 
 router = APIRouter(prefix='/posts', tags=['Posts'])
 
 @router.get('/', response_model=List[schema.Post])
-def get_posts(db: Session = Depends(get_db)):
+def get_posts(db: Session = Depends(get_db), current_user : int = Depends(oauth2.get_current_user)):
+    print(current_user.email, '\n', type(current_user))
     return db.query(models.Post).all()
 
 @router.get('/{id}', response_model=schema.Post)
-def get_post(id: int, db: Session = Depends(get_db)):
+def get_post(id: int, db: Session = Depends(get_db), current_user : int = Depends(oauth2.get_current_user)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(status_code=404, detail=f"Item {id} not found")
     return post
 
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=schema.Post)
-def create_posts(post: schema.PostCreate, db: Session = Depends(get_db)):
+def create_posts(post: schema.PostCreate, db: Session = Depends(get_db), current_user : int = Depends(oauth2.get_current_user)):
+    print(current_user)
     new_post = models.Post(**post.dict())
     db.add(new_post)
     db.commit()
@@ -28,7 +30,7 @@ def create_posts(post: schema.PostCreate, db: Session = Depends(get_db)):
     return new_post
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int, db: Session = Depends(get_db)):
+def delete_post(id: int, db: Session = Depends(get_db), current_user : int = Depends(oauth2.get_current_user)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with {id} does not exist")
@@ -37,7 +39,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return None
 
 @router.put("/{id}", response_model=schema.Post)
-def update_post(id: int, post: schema.PostCreate, db: Session = Depends(get_db)):
+def update_post(id: int, post: schema.PostCreate, db: Session = Depends(get_db), current_user : int = Depends(oauth2.get_current_user)):
     db_post = db.query(models.Post).filter(models.Post.id == id).first()
     if db_post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with {id} does not exist")

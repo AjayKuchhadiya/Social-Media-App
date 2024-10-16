@@ -1,9 +1,12 @@
 # Python bytecode
-src/__pycache__/
+__pycache__
 *.py[cod]
 
 # Virtual environment
 venv/
+
+# environment variables
+.env 
 
 # Logs and temporary files
 *.log

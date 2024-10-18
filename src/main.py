@@ -20,4 +20,4 @@ def root():
     return {'message' : 'Hello World'}
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", host=setting.database_hostname, port=setting.database_port, reload=True)
+    uvicorn.run("main:app", host=setting.database_hostname, port=8000, reload=True)

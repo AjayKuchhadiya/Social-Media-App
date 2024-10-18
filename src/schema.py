@@ -30,6 +30,13 @@ class Post(PostBase):
     class Config:
         orm_mode = True
 
+class PostOUT(BaseModel):
+    post : Post
+    vote : int
+
+    class Config:
+        orm_mode = True
+
 class UserCreate(UserBase):
     pass
 

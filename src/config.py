@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     database_password : str
     database_username : str
     database_name : str
-    database_port : str
+    database_port : int
     secret_key : str
     algorithm : str
     access_token_expire_min : int
